@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import expect
 from element_selectors.login_selectors import LOGIN_ERROR
-from setup import BASE_URL, STANDARD_PASSWORD, STANDARD_USERNAME
+from setup import BASE_URL, HOMEPAGE_URL, STANDARD_PASSWORD, STANDARD_USERNAME
 
 @pytest.mark.login
 class TestLogin:
@@ -14,7 +14,7 @@ class TestLogin:
             username=STANDARD_USERNAME,
             password=STANDARD_PASSWORD,
             )
-        title = '' # TODO
+        
     
     @pytest.mark.locked_user
     def test_locked_out_user(self, login_page):
@@ -25,7 +25,7 @@ class TestLogin:
             password=STANDARD_PASSWORD,
             )
         error = login_page.get_error(locator=LOGIN_ERROR)
-        assert 'Epic sadface: Sorry, this user has been locked out.' in error.inner_text()
+        assert 'Sorry, this user has been locked out.' in error.inner_text()
 
     @pytest.mark.empty_username
     def test_empty_username(self, login_page):
@@ -47,3 +47,23 @@ class TestLogin:
             )
         error = login_page.get_error(locator=LOGIN_ERROR)
         assert 'Password is required' in error.inner_text()
+
+    
+    @pytest.mark.invalid_credentials
+    def test_invalid_credentials(self, login_page):
+        login_page.load(url=BASE_URL)
+        login_page.login(
+            username='0',
+            password='0',
+            )
+        error = login_page.get_error(locator=LOGIN_ERROR)
+        assert 'Username and password do not match any user in this service' in error.inner_text()
+
+    @pytest.mark.logout
+    def test_logout(self, login_page):
+        login_page.load(url=BASE_URL)
+        login_page.login(
+            username=STANDARD_USERNAME,
+            password=STANDARD_PASSWORD,
+            )
+        login_page.logout()

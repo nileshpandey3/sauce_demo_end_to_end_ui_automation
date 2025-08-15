@@ -1,5 +1,6 @@
 from playwright.sync_api import Page, expect
-from element_selectors.login_selectors import USERNAME, PASSWORD, LOGIN_BTN
+from element_selectors.login_selectors import HAMBURGER_MENU, LOGOUT_SIDEBAR_LINK, TITLE, USERNAME, PASSWORD, LOGIN_BTN
+from setup import BASE_URL, HOMEPAGE_URL
 
 class LoginPage:
 
@@ -18,7 +19,12 @@ class LoginPage:
     
     def get_error(self, locator):
         return self.page.locator(locator)
-
+    
+    def logout(self):
+        if self.page.url == HOMEPAGE_URL:
+            self.page.get_by_role("button", name=HAMBURGER_MENU).click()
+            self.page.locator(LOGOUT_SIDEBAR_LINK)
+            assert self.page.url == BASE_URL
 
     def login(self, username:str, password:str):
         # login using the supplied credentials
