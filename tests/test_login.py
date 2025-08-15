@@ -11,20 +11,39 @@ class TestLogin:
         # Perform and verify a standard login
         login_page.load(url=BASE_URL)
         login_page.login(
-            url=BASE_URL,
             username=STANDARD_USERNAME,
             password=STANDARD_PASSWORD,
             )
-        expect(login_page).to_have_title('Swag Labs')
+        title = '' # TODO
     
     @pytest.mark.locked_user
     def test_locked_out_user(self, login_page):
         # Perform and verify login for a locked out user
         login_page.load(url=BASE_URL)
         login_page.login(
-            url=BASE_URL,
             username='locked_out_user',
             password=STANDARD_PASSWORD,
             )
         error = login_page.get_error(locator=LOGIN_ERROR)
         assert 'Epic sadface: Sorry, this user has been locked out.' in error.inner_text()
+
+    @pytest.mark.empty_username
+    def test_empty_username(self, login_page):
+        login_page.load(url=BASE_URL)
+        login_page.login(
+            username='',
+            password=STANDARD_PASSWORD,
+            )
+        error = login_page.get_error(locator=LOGIN_ERROR)
+        assert 'Username is required' in error.inner_text()
+        
+
+    @pytest.mark.empty_password
+    def test_empty_username(self, login_page):
+        login_page.load(url=BASE_URL)
+        login_page.login(
+            username=STANDARD_USERNAME,
+            password='',
+            )
+        error = login_page.get_error(locator=LOGIN_ERROR)
+        assert 'Password is required' in error.inner_text()

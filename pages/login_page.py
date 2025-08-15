@@ -20,7 +20,7 @@ class LoginPage:
         return self.page.locator(locator)
 
 
-    def login(self, url, username:str, password:str):
+    def login(self, username:str, password:str):
         # login using the supplied credentials
         self.username_input(username)
         self.passowrd_input(password)
